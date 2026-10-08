@@ -1,0 +1,16 @@
+{
+  "name": "My Day - 하루계획표",
+  "short_name": "My Day",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f7f5f1",
+  "theme_color": "#f7f5f1",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

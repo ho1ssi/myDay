@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f5f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="My Day">
+<link rel="manifest" href="manifest.json">
+<title>My Day</title>
+<style>
+:root{--bg:#f7f5f1;--card:#fff;--text:#252525;--muted:#8a8883;--line:#e8e4dd;--accent:#5d6250;--soft:#eef0e9;--danger:#b86b5f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+button,input,textarea{font:inherit}button{border:0;background:none;color:inherit}
+.app{max-width:720px;margin:auto;padding:env(safe-area-inset-top) 16px calc(24px + env(safe-area-inset-bottom))}
+.header{display:flex;justify-content:space-between;align-items:center;padding:22px 2px 14px}
+.kicker{font-size:13px;color:var(--muted);margin-bottom:3px}.title{font-size:28px;font-weight:750;letter-spacing:-.7px}
+.date-nav{display:flex;align-items:center;gap:7px}.date-nav button{width:34px;height:34px;border-radius:12px;background:#fff;box-shadow:0 1px 4px #0000000d}
+.date{font-size:14px;color:var(--muted);min-width:110px;text-align:center}
+.today-btn{background:var(--text)!important;color:white!important;width:auto!important;padding:0 12px}
+.summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin:8px 0 16px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 12px}.stat b{display:block;font-size:19px}.stat span{font-size:11px;color:var(--muted)}
+.progress{height:7px;background:#e8e6e1;border-radius:99px;overflow:hidden;margin-top:10px}.progress i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px}
+.now{background:var(--soft);border-radius:18px;padding:13px 15px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:13px}.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px #dfe3d8}
+.timeline{position:relative}.row{display:grid;grid-template-columns:54px 1fr;gap:9px;position:relative;margin-bottom:9px}.time{font-size:11px;color:var(--muted);padding-top:14px;text-align:right}.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:13px 13px 12px;position:relative}.card.done{opacity:.55}.card.running{border-color:var(--accent);box-shadow:0 0 0 2px #dfe3d8}.top{display:flex;align-items:center;gap:8px}.check{width:23px;height:23px;border:1.5px solid #bdb9b1;border-radius:8px;display:grid;place-items:center;flex:none}.done .check{background:var(--accent);border-color:var(--accent);color:#fff}.check:after{content:"✓";font-size:14px;display:none}.done .check:after{display:block}.task{font-weight:650;font-size:15px;letter-spacing:-.2px;flex:1}.range{font-size:11px;color:var(--muted);margin-top:7px;margin-left:31px}.actions{display:flex;gap:6px;margin-top:11px;margin-left:31px}.mini{font-size:11px;padding:6px 9px;background:#f5f3ef;border-radius:9px;color:#666}.mini.primary{background:var(--text);color:#fff}.empty{text-align:center;color:var(--muted);padding:42px 10px}.fab{position:fixed;right:18px;bottom:calc(22px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:18px;background:var(--text);color:#fff;font-size:28px;box-shadow:0 8px 24px #0002}
+.sheet{position:fixed;inset:0;background:#0005;display:none;align-items:flex-end;z-index:10}.sheet.show{display:flex}.panel{width:100%;max-width:720px;margin:auto;background:var(--bg);border-radius:24px 24px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto}
+.panel h2{margin:0 0 16px;font-size:20px}.field{margin:12px 0}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}.field input,.field textarea{width:100%;border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px;outline:none}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.save{width:100%;padding:13px;border-radius:13px;background:var(--text);color:#fff;font-weight:650;margin-top:8px}.cancel{width:100%;padding:12px;color:var(--muted)}
+.install{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:14px;font-size:12px;color:#68655f}.install b{color:var(--text)} 
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div><div class="kicker">MY DAY</div><div class="title">오늘의 하루계획</div></div>
+    <button class="today-btn" onclick="goToday()">오늘</button>
+  </header>
+  <div class="date-nav">
+    <button onclick="moveDate(-1)">‹</button><div id="date" class="date"></div><button onclick="moveDate(1)">›</button>
+  </div>
+  <div id="install" class="install" style="display:none"><b>아이폰에 앱처럼 설치하기</b><br>Safari의 공유 버튼 → <b>홈 화면에 추가</b>를 선택하세요.</div>
+  <section class="summary">
+    <div class="stat"><b id="planned">0h</b><span>계획 시간</span></div>
+    <div class="stat"><b id="done">0h</b><span>완료 시간</span></div>
+    <div class="stat"><b id="rate">0%</b><span>달성률</span></div>
+  </section>
+  <div class="progress"><i id="bar"></i></div>
+  <div class="now"><span class="dot"></span><span id="nowText">오늘도 내 속도로 시작해요.</span></div>
+  <main id="timeline" class="timeline"></main>
+</div>
+<button class="fab" onclick="openAdd()">＋</button>
+
+<div id="sheet" class="sheet" onclick="if(event.target===this)closeSheet()">
+ <div class="panel">
+  <h2 id="formTitle">일정 추가</h2>
+  <input id="editId" type="hidden">
+  <div class="field"><label>할 일</label><input id="task" placeholder="예: 토익스피킹 공부"></div>
+  <div class="grid2">
+   <div class="field"><label>시작</label><input id="start" type="time" value="09:00"></div>
+   <div class="field"><label>종료</label><input id="end" type="time" value="10:00"></div>
+  </div>
+  <div class="field"><label>메모</label><textarea id="memo" rows="2" placeholder="필요하면 간단히 적어두세요"></textarea></div>
+  <button class="save" onclick="saveItem()">저장</button>
+  <button class="cancel" onclick="closeSheet()">취소</button>
+ </div>
+</div>
+
+<script>
+const KEY="myday-v1";
+let selected=new Date(); selected.setHours(0,0,0,0);
+let data=JSON.parse(localStorage.getItem(KEY)||"{}");
+function key(d){return d.toISOString().slice(0,10)}
+function items(){return data[key(selected)]||[]}
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function fmtDate(d){return d.toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"short"})}
+function mins(t){let [h,m]=t.split(":").map(Number);return h*60+m}
+function hours(n){return (n/60).toFixed(1).replace(".0","")+"h"}
+function render(){
+ document.getElementById("date").textContent=fmtDate(selected);
+ let arr=items().sort((a,b)=>mins(a.start)-mins(b.start));
+ let total=arr.reduce((s,x)=>s+Math.max(0,mins(x.end)-mins(x.start)),0);
+ let complete=arr.filter(x=>x.done).reduce((s,x)=>s+Math.max(0,mins(x.end)-mins(x.start)),0);
+ let rate=total?Math.round(complete/total*100):0;
+ planned.textContent=hours(total); done.textContent=hours(complete); document.getElementById("rate").textContent=rate+"%"; bar.style.width=rate+"%";
+ timeline.innerHTML=arr.length?arr.map(x=>`
+ <div class="row"><div class="time">${x.start}</div>
+ <div class="card ${x.done?'done':''} ${x.running?'running':''}">
+  <div class="top"><button class="check" onclick="toggle('${x.id}')"></button><div class="task">${escapeHtml(x.task)}</div></div>
+  <div class="range">${x.start} – ${x.end}${x.memo?' · '+escapeHtml(x.memo):''}</div>
+  <div class="actions">
+   ${!x.done?`<button class="mini primary" onclick="toggle('${x.id}')">완료</button>`:''}
+   <button class="mini" onclick="edit('${x.id}')">수정</button>
+   <button class="mini" onclick="removeItem('${x.id}')">삭제</button>
+  </div>
+ </div></div>`).join(""):`<div class="empty">아직 계획이 없어요.<br>＋ 버튼으로 오늘의 시간을 채워보세요.</div>`;
+ updateNow(arr);
+}
+function updateNow(arr){
+ const d=new Date(), same=d.toDateString()===selected.toDateString();
+ if(!same){nowText.textContent="오늘의 계획을 미리 준비해둘 수 있어요.";return}
+ let m=d.getHours()*60+d.getMinutes(), cur=arr.find(x=>m>=mins(x.start)&&m<mins(x.end)&&!x.done);
+ nowText.textContent=cur?`지금은 “${cur.task}” 시간이에요.`:"현재 시간에 진행 중인 일정이 없어요.";
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function openAdd(){editId.value="";task.value="";start.value="09:00";end.value="10:00";memo.value="";formTitle.textContent="일정 추가";sheet.classList.add("show")}
+function edit(id){let x=items().find(i=>i.id===id); if(!x)return; editId.value=id;task.value=x.task;start.value=x.start;end.value=x.end;memo.value=x.memo||"";formTitle.textContent="일정 수정";sheet.classList.add("show")}
+function closeSheet(){sheet.classList.remove("show")}
+function saveItem(){
+ if(!task.value.trim())return alert("할 일을 입력해주세요.");
+ if(mins(end.value)<=mins(start.value))return alert("종료 시간은 시작 시간보다 늦어야 해요.");
+ let arr=items(), id=editId.value;
+ if(id){let x=arr.find(i=>i.id===id);Object.assign(x,{task:task.value.trim(),start:start.value,end:end.value,memo:memo.value.trim()})}
+ else arr.push({id:Date.now().toString(),task:task.value.trim(),start:start.value,end:end.value,memo:memo.value.trim(),done:false});
+ data[key(selected)]=arr;save();closeSheet();render();
+}
+function toggle(id){let x=items().find(i=>i.id===id);if(x){x.done=!x.done;save();render()}}
+function removeItem(id){if(confirm("이 일정을 삭제할까요?")){data[key(selected)]=items().filter(x=>x.id!==id);save();render()}}
+function moveDate(n){selected.setDate(selected.getDate()+n);render()}
+function goToday(){selected=new Date();selected.setHours(0,0,0,0);render()}
+if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+if(location.protocol==="file:")install.style.display="block";
+render();setInterval(()=>updateNow(items()),60000);
+</script>
+</body>
+</html>
