@@ -1,16 +1,1 @@
-{
-  "name": "My Day",
-  "short_name": "My Day",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
-  "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
-}
+{"name":"myDay 하루 시간표","short_name":"myDay","start_url":"./","scope":"./","display":"standalone","background_color":"#f7f7f5","theme_color":"#f7f7f5","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
