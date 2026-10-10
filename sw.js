@@ -1,4 +1,4 @@
-const CACHE='myday-v8-20261010';
+const CACHE='myday-v10-20261010';
 const ASSETS=['./','./index.html','./style.css','./app.js','./manifest.json','./icon.svg','./Pretendard-Regular.woff2'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('myday-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
